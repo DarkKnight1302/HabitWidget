@@ -41,7 +41,15 @@ cat > "$PLIST_PATH" <<PLIST
 PLIST
 
 launchctl bootout "gui/$(id -u)/$BUNDLE_ID" >/dev/null 2>&1 || true
-launchctl bootstrap "gui/$(id -u)" "$PLIST_PATH"
+sleep 1
+
+for _ in 1 2 3; do
+    if launchctl bootstrap "gui/$(id -u)" "$PLIST_PATH" >/dev/null 2>&1; then
+        break
+    fi
+    sleep 1
+done
+
 launchctl kickstart -k "gui/$(id -u)/$BUNDLE_ID" >/dev/null 2>&1 || true
 
 echo ""
